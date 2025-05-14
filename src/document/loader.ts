@@ -1,13 +1,13 @@
 import fs from "fs";
 import path from "path";
 
-function loadAndChunkDocs(
+export function loadAndChunkDocs(
   dir: string,
   chunkSize: number = 300
 ): { id: string; text: string }[] {
   const files = fs.readdirSync(dir);
   const allChunks: { id: string; text: string }[] = [];
-  for (const file in files) {
+  for (const file of files) {
     const filePath = path.join(dir, file);
     const content = fs.readFileSync(filePath, "utf-8");
     const chunks = chunkText(content, chunkSize);

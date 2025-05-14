@@ -1,5 +1,6 @@
 import * as readline from "readline";
 import { askSamantha } from "./samantha";
+import { loadAndChunkDocs } from "./document/loader";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -18,4 +19,9 @@ function prompt() {
   });
 }
 
-prompt();
+// prompt();
+function sandBoxInit() {
+  const chunks = loadAndChunkDocs("D:\\Projects\\Samantha\\src\\knowledge\\",300);
+  console.log(chunks);
+}
+sandBoxInit();
