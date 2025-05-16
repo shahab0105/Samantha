@@ -1,8 +1,10 @@
 import * as readline from "readline";
 import { askSamantha } from "./samantha";
 import { loadAndChunkDocs } from "./document/loader";
-import {buildVectorStore} from "./document/vectorStore"
+import { buildVectorStore } from "./document/vectorStore";
 
+const mode = process.argv[2];
+const knowledgeRoot: string  = process.env.knowledgeRoot ?? "C:/Users/<your_user>/documents";
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -20,10 +22,19 @@ function prompt() {
   });
 }
 
-async function sandBoxInit() {
-  const chunks = await loadAndChunkDocs("D:\\Projects\\Samantha\\src\\knowledge\\",300);
-  console.log(chunks);
+async function initStore() {
+  const chunks = await loadAndChunkDocs(knowledgeRoot, 300);
   await buildVectorStore(chunks);
 }
 // sandBoxInit();
-prompt();
+// prompt();
+
+async function main() {
+  if (mode == "build") {
+    await initStore();
+  } else if (mode == "run") {
+    prompt();
+  }
+}
+
+main();

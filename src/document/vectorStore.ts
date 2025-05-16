@@ -46,7 +46,6 @@ export async function queryDocs(query: string, topK = 3): Promise<string[]> {
   const validDocs = docs.filter(
     (d) => Array.isArray(d.vector) && d.vector.length === queryVec.length
   );
-  console.log("valid docs are: ", validDocs);
   return validDocs
     .map((d) => ({ ...d, score: cosineSim(queryVec, d.vector) }))
     .sort((a, b) => b.score - a.score)
