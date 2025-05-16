@@ -1,27 +1,36 @@
 import fs from "fs";
 import path from "path";
-
-export function loadAndChunkDocs(
-  dir: string,
-  chunkSize: number = 300
-): { id: string; text: string }[] {
-  const files = fs.readdirSync(dir);
-  const allChunks: { id: string; text: string }[] = [];
-  for (const file of files) {
-    const filePath = path.join(dir, file);
-    const content = fs.readFileSync(filePath, "utf-8");
-    const chunks = chunkText(content, chunkSize);
-    chunks.forEach((ch, i) => {
-      allChunks.push({
-        id: `${file}::part-${i}`,
-        text: ch,
+import { extractTextFromPDF } from "./pdfLoader";
+export async function loadAndChunkDocs(
+    dir: string,
+    chunkSize = 300
+  ): Promise<{ id: string; text: string }[]> {
+    const files = fs.readdirSync(dir);
+    const allChunks: { id: string; text: string }[] = [];
+  
+    for (const file of files) {
+      const fullPath = path.join(dir, file);
+      const ext = path.extname(file).toLowerCase();
+  
+      let content = "";
+  
+      if (ext === ".pdf") {
+        content = await extractTextFromPDF(fullPath);
+      } else {
+        content = fs.readFileSync(fullPath, "utf-8");
+      }
+  
+      const chunks = chunkText(content, chunkSize);
+  
+      chunks.forEach((chunk, i) => {
+        allChunks.push({ id: `${file}::part-${i}`, text: chunk });
       });
-    });
+    }
+  
+    return allChunks;
   }
-  return allChunks;
-}
 
-function chunkText(text: string, maxWords: number = 300): string[] {
+function chunkText(text: string, maxWords: number = 200): string[] {
   const words = text.split(/\s+/);
   const chunks: string[] = [];
   for (let i = 0; i < words.length; i += maxWords) {

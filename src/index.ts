@@ -1,6 +1,7 @@
 import * as readline from "readline";
 import { askSamantha } from "./samantha";
 import { loadAndChunkDocs } from "./document/loader";
+import {buildVectorStore} from "./document/vectorStore"
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -20,8 +21,9 @@ function prompt() {
 }
 
 // prompt();
-function sandBoxInit() {
-  const chunks = loadAndChunkDocs("D:\\Projects\\Samantha\\src\\knowledge\\",300);
+async function sandBoxInit() {
+  const chunks = await loadAndChunkDocs("D:\\Projects\\Samantha\\src\\knowledge\\",300);
   console.log(chunks);
+  await buildVectorStore(chunks);
 }
 sandBoxInit();

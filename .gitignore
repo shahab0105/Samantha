@@ -1,4 +1,6 @@
 /node_modules/
 .env
 /dist/
-/src/knowledge/
+src/knowledge/
+/src/data/docVectors.json
+src/data/docVectors.json
