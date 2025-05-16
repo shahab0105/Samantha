@@ -20,10 +20,10 @@ function prompt() {
   });
 }
 
-// prompt();
 async function sandBoxInit() {
   const chunks = await loadAndChunkDocs("D:\\Projects\\Samantha\\src\\knowledge\\",300);
   console.log(chunks);
   await buildVectorStore(chunks);
 }
-sandBoxInit();
+// sandBoxInit();
+prompt();

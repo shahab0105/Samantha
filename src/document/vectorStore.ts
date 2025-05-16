@@ -22,10 +22,11 @@ async function buildVectorStore(chunks: { id: string; text: string }[]) {
 }
 
 function loadVectorStore(): VectorDoc[] {
-  const vectors: VectorDoc[] = [];
+  // const vectors: VectorDoc[] = [];
   const rawVectors = fs.readFileSync(storePath, "utf-8");
-  vectors.push(JSON.parse(rawVectors));
-  return vectors;
+  // vectors.push(JSON.parse(rawVectors));
+  const vectors = JSON.parse(rawVectors);
+  return vectors as VectorDoc[];
 }
 //simply the dotproduct of two vectors
 //so we will get the dot product between the vector(getembedding output) of user's question/query
@@ -42,7 +43,11 @@ export async function queryDocs(query: string, topK = 3): Promise<string[]> {
   const queryVec = await getEmbedding(query);
   const docs = loadVectorStore();
 
-  return docs
+  const validDocs = docs.filter(
+    (d) => Array.isArray(d.vector) && d.vector.length === queryVec.length
+  );
+  console.log("valid docs are: ", validDocs);
+  return validDocs
     .map((d) => ({ ...d, score: cosineSim(queryVec, d.vector) }))
     .sort((a, b) => b.score - a.score)
     .slice(0, topK)

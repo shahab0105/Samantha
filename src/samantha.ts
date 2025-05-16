@@ -1,5 +1,6 @@
 import { OpenAI } from "openai";
 import * as dotenv from "dotenv";
+import { queryDocs } from "./document/vectorStore";
 
 dotenv.config();
 
@@ -17,6 +18,16 @@ const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
 ];
 
 async function askSamantha(input: string): Promise<string> {
+  const relevantDocs = await queryDocs(input);
+  if (relevantDocs.length > 0) {
+    messages.push({
+      role: "user",
+      content: `Use the following context to help answer:\n${relevantDocs.join(
+        "\n\n"
+      )}`,
+    });
+  }
+
   messages.push({ role: "user", content: input });
 
   const completion = await ai.chat.completions.create({
@@ -26,6 +37,7 @@ async function askSamantha(input: string): Promise<string> {
 
   const reply = completion.choices[0].message?.content || "[NO RESPONSE]";
   messages.push({ role: "assistant", content: reply });
+
   return reply;
 }
 
